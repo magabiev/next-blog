@@ -4,6 +4,7 @@ import { Post } from '@/api/posts';
 import Image from 'next/image';
 import Comments from '@/components/Comments';
 import { serverSideApi } from '@/api/serverSideInstance';
+import { Metadata } from 'next';
 
 interface PostDetailProps {
   params: { postId: number };
@@ -15,6 +16,17 @@ const getPostDetail = async (postId: number) => {
   } catch (e) {
     console.log('error', e);
   }
+};
+
+export const generateMetadata = async ({
+  params,
+}: PostDetailProps): Promise<Metadata> => {
+  const data = await getPostDetail(params.postId);
+  return {
+    title: data?.data.title,
+    description: data?.data.content,
+    keywords: data?.data.content.split(''),
+  };
 };
 
 async function PostDetail(params: PostDetailProps) {
@@ -38,7 +50,7 @@ async function PostDetail(params: PostDetailProps) {
             <Image
               width={300}
               height={300}
-              src="http://localhost:5001/img.jpeg"
+              src={`http://localhost:5001/${data?.data.image}`}
               alt="Post Image"
               className="w-full object-cover"
             />
